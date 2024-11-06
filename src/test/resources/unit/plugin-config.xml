@@ -1,0 +1,23 @@
+<project>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.moj.service</groupId>
+                <artifactId>insights</artifactId>
+                <version>1.0.4</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>parse-drl</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <drlDirectories>
+                        <drlDirectory>src/test/resources/drl</drlDirectory>
+                    </drlDirectories>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
