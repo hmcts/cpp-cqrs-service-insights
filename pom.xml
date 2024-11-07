@@ -224,7 +224,7 @@
                 <configuration>
                     <flowInitContext>
                         <masterBranchName>dev/release</masterBranchName>
-                        <developBranchName>main</developBranchName>
+                        <developBranchName>team/firstCut</developBranchName>
                         <featureBranchPrefix>dev/feature-</featureBranchPrefix>
                         <releaseBranchPrefix>dev/release-</releaseBranchPrefix>
                         <hotfixBranchPrefix>dev/hotfix-</hotfixBranchPrefix>
@@ -235,6 +235,7 @@
                     <pushReleases>true</pushReleases>
                 </configuration>
             </plugin>
+
         </plugins>
     </build>
 
