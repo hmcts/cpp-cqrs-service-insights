@@ -37,7 +37,6 @@
         <guava.version>30.1.1-jre</guava.version>
         <plexus.container.version>2.1.0</plexus.container.version>
 
-        <jgitflow-maven-plugin.version>1.0-m5.1</jgitflow-maven-plugin.version>
     </properties>
 
     <!-- Repositories -->
@@ -214,26 +213,12 @@
                 </configuration>
             </plugin>
 
-            <plugin>
-                <groupId>external.atlassian.jgitflow</groupId>
-                <artifactId>jgitflow-maven-plugin</artifactId>
-                <version>${jgitflow-maven-plugin.version}</version>
-                <configuration>
-                    <flowInitContext>
-                        <masterBranchName>dev/release</masterBranchName>
-                        <developBranchName>team/firstCut</developBranchName>
-                        <featureBranchPrefix>dev/feature-</featureBranchPrefix>
-                        <releaseBranchPrefix>dev/release-</releaseBranchPrefix>
-                        <hotfixBranchPrefix>dev/hotfix-</hotfixBranchPrefix>
-                        <versionTagPrefix>v</versionTagPrefix>
-                    </flowInitContext>
-                    <autoVersionSubmodules>true</autoVersionSubmodules>
-                    <enableSshAgent>true</enableSshAgent>
-                    <pushReleases>true</pushReleases>
-                </configuration>
-            </plugin>
-
         </plugins>
     </build>
-
+    <scm>
+        <connection>${cpp.scm.connection}</connection>
+        <developerConnection>${cpp.scm.developerConnection}</developerConnection>
+        <url>${cpp.scm.url}</url>
+        <tag>HEAD</tag>
+    </scm>
 </project>
