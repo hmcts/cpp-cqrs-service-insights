@@ -39,6 +39,8 @@
         <sisu.version>0.3.5</sisu.version>
         <guava.version>30.1.1-jre</guava.version>
         <plexus.container.version>2.1.0</plexus.container.version>
+
+        <jgitflow-maven-plugin.version>1.0-m5.1</jgitflow-maven-plugin.version>
     </properties>
 
     <!-- Repositories -->
@@ -212,6 +214,25 @@
                         <include>**/*Test.java</include>
                     </includes>
                     <useModulePath>false</useModulePath>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>external.atlassian.jgitflow</groupId>
+                <artifactId>jgitflow-maven-plugin</artifactId>
+                <version>${jgitflow-maven-plugin.version}</version>
+                <configuration>
+                    <flowInitContext>
+                        <masterBranchName>dev/release</masterBranchName>
+                        <developBranchName>main</developBranchName>
+                        <featureBranchPrefix>dev/feature-</featureBranchPrefix>
+                        <releaseBranchPrefix>dev/release-</releaseBranchPrefix>
+                        <hotfixBranchPrefix>dev/hotfix-</hotfixBranchPrefix>
+                        <versionTagPrefix>v</versionTagPrefix>
+                    </flowInitContext>
+                    <autoVersionSubmodules>true</autoVersionSubmodules>
+                    <enableSshAgent>true</enableSshAgent>
+                    <pushReleases>true</pushReleases>
                 </configuration>
             </plugin>
         </plugins>

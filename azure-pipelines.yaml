@@ -35,15 +35,7 @@ variables:
 
 stages:
   - ${{ if eq(variables['Build.Reason'], 'PullRequest') }}:
-      - template: pipelines/context-verify.yaml@cppAzureDevOpsTemplates
-        parameters:
-          sonarqube_project: ${{ variables['sonarqubeProject'] }}
-          sonarQubeType: 'sonarQubeAKS'
+      - template: pipelines/platform-verify.yaml@cppAzureDevOpsTemplates
 
   - ${{ if eq(variables['Build.Reason'], 'IndividualCI') }}:
-      - template: pipelines/context-validation.yaml@cppAzureDevOpsTemplates
-        parameters:
-          repo: "$(Build.Repository.Name)"
-          sonarQubeType: 'sonarQubeAKS'
-          serviceName: ${{ variables['service_Name'] }}
-          itTestFolder: ${{ variables['itTest_Folder'] }}
+      - template: pipelines/platform-validation.yaml@cppAzureDevOpsTemplates
