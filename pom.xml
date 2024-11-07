@@ -8,7 +8,7 @@
     <!-- Basic Project Information -->
     <groupId>uk.gov.moj.cpp.service</groupId>
     <artifactId>insights</artifactId>
-    <version>1.0.4</version>
+    <version>1.0.0-SNAPSHOT</version>
     <name>Service Insights Parser Maven Plugin</name>
     <description>A Maven plugin to parse DRL files and extract action-group mappings.</description>
     <packaging>maven-plugin</packaging>
@@ -25,6 +25,9 @@
         <maven.plugin.api.version>3.9.9</maven.plugin.api.version>
         <maven.plugin.annotations.version>3.6.0</maven.plugin.annotations.version>
         <maven.plugin.plugin.version>3.9.0</maven.plugin.plugin.version>
+        <gson.version>2.8.9</gson.version>
+
+        <!-- Test Dependency Versions -->
         <junit.jupiter.version>5.9.3</junit.jupiter.version>
         <maven.plugin.testing.version>3.3.0</maven.plugin.testing.version>
         <mockito.junit.jupiter.version>4.11.0</mockito.junit.jupiter.version>
@@ -32,13 +35,14 @@
         <maven.core.version>3.8.6</maven.core.version>
         <maven.surefire.plugin.version>3.0.0</maven.surefire.plugin.version>
         <maven.compiler.plugin.version>3.10.1</maven.compiler.plugin.version>
-        <gson.version>2.8.9</gson.version>
         <logback.version>1.2.11</logback.version>
+        <sisu.version>0.3.5</sisu.version>
+        <guava.version>30.1.1-jre</guava.version>
+        <plexus.container.version>2.1.0</plexus.container.version>
     </properties>
 
     <!-- Repositories -->
     <repositories>
-        <!-- Maven Central Repository -->
         <repository>
             <id>central</id>
             <url>https://repo.maven.apache.org/maven2</url>
@@ -49,48 +53,39 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
-        <!-- Additional repositories can be added here if needed -->
     </repositories>
 
     <!-- Dependencies -->
     <dependencies>
-        <!-- JavaParser for parsing Java source files -->
+        <!-- Main Dependencies -->
         <dependency>
             <groupId>com.github.javaparser</groupId>
             <artifactId>javaparser-core</artifactId>
             <version>${javaparser.version}</version>
         </dependency>
-
-        <!-- JavaParser Symbol Solver -->
         <dependency>
             <groupId>com.github.javaparser</groupId>
             <artifactId>javaparser-symbol-solver-core</artifactId>
             <version>${javaparser.version}</version>
         </dependency>
-
-        <!-- Maven Plugin API for AbstractMojo and MojoExecutionException -->
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-plugin-api</artifactId>
             <version>${maven.plugin.api.version}</version>
         </dependency>
-
-        <!-- Maven Plugin Annotations for annotations like @Mojo -->
         <dependency>
             <groupId>org.apache.maven.plugin-tools</groupId>
             <artifactId>maven-plugin-annotations</artifactId>
             <version>${maven.plugin.annotations.version}</version>
             <scope>provided</scope>
         </dependency>
-
-        <!-- Gson for JSON processing (optional, if used in your project) -->
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>${gson.version}</version>
         </dependency>
 
-        <!-- JUnit 5 for Unit Testing -->
+        <!-- Test Dependencies -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
@@ -109,63 +104,47 @@
             <version>${junit.jupiter.version}</version>
             <scope>test</scope>
         </dependency>
-
-        <!-- Maven Core for testing purposes -->
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-core</artifactId>
             <version>${maven.core.version}</version>
             <scope>test</scope>
         </dependency>
-
-        <!-- Maven Plugin Testing Harness for Integration Testing -->
         <dependency>
             <groupId>org.apache.maven.plugin-testing</groupId>
             <artifactId>maven-plugin-testing-harness</artifactId>
             <version>${maven.plugin.testing.version}</version>
             <scope>test</scope>
         </dependency>
-
-        <!-- Mockito JUnit Jupiter integration -->
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
             <version>${mockito.junit.jupiter.version}</version>
             <scope>test</scope>
         </dependency>
-
-        <!-- Eclipse Sisu Plexus (if needed) -->
         <dependency>
             <groupId>org.eclipse.sisu</groupId>
             <artifactId>org.eclipse.sisu.plexus</artifactId>
-            <version>0.3.5</version>
+            <version>${sisu.version}</version>
         </dependency>
-
-        <!-- Guava for utility classes -->
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>30.1.1-jre</version>
-            <scope>test</scope> <!-- Change to compile if needed -->
+            <version>${guava.version}</version>
+            <scope>test</scope>
         </dependency>
-
-        <!-- Plexus Container Default (if needed) -->
         <dependency>
             <groupId>org.codehaus.plexus</groupId>
             <artifactId>plexus-container-default</artifactId>
-            <version>2.1.0</version>
+            <version>${plexus.container.version}</version>
             <scope>test</scope>
         </dependency>
-
-        <!-- Jimfs for in-memory file systems -->
         <dependency>
             <groupId>com.google.jimfs</groupId>
             <artifactId>jimfs</artifactId>
             <version>${jimfs.version}</version>
             <scope>test</scope>
         </dependency>
-
-        <!-- Logback for logging in tests (optional) -->
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
@@ -186,7 +165,6 @@
                     <source>${maven.compiler.source}</source>
                     <target>${maven.compiler.target}</target>
                     <annotationProcessorPaths>
-                        <!-- Ensure annotations are processed correctly -->
                         <path>
                             <groupId>org.apache.maven.plugin-tools</groupId>
                             <artifactId>maven-plugin-annotations</artifactId>
@@ -215,9 +193,6 @@
                         </goals>
                     </execution>
                 </executions>
-                <configuration>
-                    <!-- Additional configurations can be specified here if needed -->
-                </configuration>
             </plugin>
 
             <!-- Maven Release Plugin for releasing artifacts -->
