@@ -6,6 +6,7 @@ import uk.gov.moj.cpp.service.insights.liquibase.parser.ChangeLogParser;
 import uk.gov.moj.cpp.service.insights.liquibase.parser.IChangeLogParser;
 import uk.gov.moj.cpp.service.insights.liquibase.visualization.IVisualizationGenerator;
 import uk.gov.moj.cpp.service.insights.liquibase.visualization.VisualizationGenerator;
+import uk.gov.moj.cpp.service.insights.util.ServiceUtil;
 
 import java.io.File;
 import java.util.LinkedHashMap;
@@ -71,7 +72,7 @@ public class SchemaVisualizerMojo extends AbstractMojo {
             // Generate HTML visualization
             if (!tables.isEmpty()) {
                 String filePath = new File(outputDir, schemaFileName).getAbsolutePath();
-                generator.generateHTMLVisualization(tables, filePath, "Database Schema");
+                generator.generateHTMLVisualization(tables, filePath, ServiceUtil.getServiceNameRegex(changeLogsDir.getAbsolutePath()));
                 getLog().info("Schema visualization generated at: " + filePath);
             } else {
                 getLog().warn("No tables found to generate visualization.");

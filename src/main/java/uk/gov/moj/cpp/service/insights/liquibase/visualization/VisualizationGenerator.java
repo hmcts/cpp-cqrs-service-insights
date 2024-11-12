@@ -148,9 +148,9 @@ public class VisualizationGenerator implements IVisualizationGenerator {
                 
                             /* Highlight Styles */
                             .highlighted-node {
-                                background-color: #FFEB3B; /* Amber */
+                                background-color: #4CAF50; /* Professional Green */
                                 border-width: 3px;
-                                border-color: #F57F17; /* Dark Amber */
+                                border-color: #388E3C; /* Dark Green */
                                 transition: background-color 0.3s, border-color 0.3s;
                             }
                 
@@ -304,12 +304,12 @@ public class VisualizationGenerator implements IVisualizationGenerator {
                     window.onload = function() {
                         try {
                             console.log('Initializing Cytoscape.js and Tippy.js...');
-                
+    
                             // Register Cytoscape.js extensions
                             cytoscape.use(cytoscapeDagre);
                             cytoscape.use(cytoscapeCoseBilkent);
                             cytoscape.use(cytoscapePopper);
-                
+    
                             var cy = cytoscape({
                                 container: document.getElementById('cy'),
                                 elements: [
@@ -378,9 +378,9 @@ public class VisualizationGenerator implements IVisualizationGenerator {
                                     {
                                         selector: '.highlighted-node',
                                         style: {
-                                            'background-color': '#FFEB3B', /* Amber */
+                                            'background-color': '#4CAF50', /* Professional Green */
                                             'border-width': '3px',
-                                            'border-color': '#F57F17', /* Dark Amber */
+                                            'border-color': '#388E3C', /* Dark Green */
                                             'transition-property': 'background-color, border-color',
                                             'transition-duration': '0.3s'
                                         }
@@ -417,33 +417,33 @@ public class VisualizationGenerator implements IVisualizationGenerator {
                                     randomize: false
                                 }
                             });
-                
+    
                             // Initialize tooltips using Tippy.js
                             cy.nodes().forEach(function(node) {
                                 var tableName = node.data('label');
                                 var columns = node.data('columns'); // Retrieve the columns array
                                 var indexes = node.data('indexes'); // Retrieve the indexes array
-                
+    
                                 // Start constructing the HTML content for the tooltip
                                 var tooltipContent = "<div class='tooltip-content'>" +
                                                      "<strong>Table:</strong> " + tableName + "<br/><br/>" +
                                                      "<strong>Columns:</strong><br/>" +
                                                      columns.map(function(col) { return "- " + col; }).join("<br/>");
-                
+    
                                 // Check if there are any indexes
                                 if (indexes.length > 0) {
                                     tooltipContent += "<br/><br/><strong>Indexes:</strong><br/>" +
                                                 indexes.map(function(index) { return "- " + index; }).join("<br/>");
                                     }
-                
+    
                                 // Close the tooltip container
                                 tooltipContent += "</div>";
-                
+    
                                 if (typeof tippy === 'undefined') {
                                     console.error('Tippy.js is not loaded.');
                                     return;
                                 }
-                
+    
                                 var ref = node.popperRef();
                                 var dummy = document.createElement('div');
                                 dummy.style.display = 'none';
@@ -463,7 +463,7 @@ public class VisualizationGenerator implements IVisualizationGenerator {
                                  // New Tippy.js for "Show References"
                              var toggleReferenceDetails = document.getElementById('toggleReferenceDetails');
                              var referenceListContent = document.getElementById('referenceListContainer').innerHTML;
-                
+    
                              tippy(toggleReferenceDetails, {
                                  content: referenceListContent,
                                  allowHTML: true,
@@ -486,82 +486,74 @@ public class VisualizationGenerator implements IVisualizationGenerator {
                                     node.data('tooltip').show();
                                 }
                             });
-                
+    
                             cy.on('mouseout', 'node', function(evt) {
                                 var node = evt.target;
                                 if (node.data('tooltip')) {
                                     node.data('tooltip').hide();
                                 }
                             });
-                
+    
                             // Highlight Linked Nodes on Click
                             cy.on('tap', 'node', function(evt){
                                 var clickedNode = evt.target;
-                
+    
                                 // Remove existing highlights
                                 cy.elements().removeClass('highlighted-node highlighted-edge selected-node');
-                
+    
                                 // Highlight the clicked node
                                 clickedNode.addClass('selected-node');
-                
+    
                                 // Get all connected edges
                                 var connectedEdges = clickedNode.connectedEdges();
-                
+    
                                 // Highlight connected edges
                                 connectedEdges.addClass('highlighted-edge');
-                
+    
                                 // Get all connected nodes (neighbors)
                                 var connectedNodes = connectedEdges.connectedNodes();
-                
+    
                                 // Highlight connected nodes
                                 connectedNodes.addClass('highlighted-node');
                             });
-                
+    
                             // Toggle Foreign Key Relationships
                             document.getElementById('toggleForeignKey').addEventListener('change', function(e) {
                                 var show = e.target.checked;
                                 cy.edges('[type="foreignKey"]').style('display', show ? 'element' : 'none');
                             });
-                
+    
                             // Toggle Reference Relationships
                             document.getElementById('toggleReference').addEventListener('change', function(e) {
                                 var show = e.target.checked;
                                 cy.edges('[type="reference"]').style('display', show ? 'element' : 'none');
                             });
-                
+    
                             // Search Functionality
                             document.getElementById('searchBox').addEventListener('input', function(e) {
                                 var query = e.target.value.toLowerCase();
-                                var showForeignKey = document.getElementById('toggleForeignKey').checked;
-                                var showReference = document.getElementById('toggleReference').checked;
-                
+    
                                 cy.nodes().forEach(function(node) {
                                     var label = node.data('label').toLowerCase();
-                                    var match = label.includes(query);
-                                    node.style('display', match ? 'element' : 'none');
-                
-                                    // Iterate over connected edges
-                                    node.connectedEdges().forEach(function(edge) {
-                                        var edgeType = edge.data('type');
-                                        var shouldShow = match && (
-                                            (edgeType === 'foreignKey' && showForeignKey) ||
-                                            (edgeType === 'reference' && showReference)
-                                        );
-                                        edge.style('display', shouldShow ? 'element' : 'none');
-                                    });
+                                    var match = label.includes(query) && query !== "";
+                                    if (match) {
+                                        node.addClass('highlighted-node');
+                                    } else {
+                                        node.removeClass('highlighted-node');
+                                    }
                                 });
                             });
-                
+    
                             // Reset Highlights Button
                             document.getElementById('resetHighlight').addEventListener('click', function() {
                                 cy.elements().removeClass('highlighted-node highlighted-edge selected-node');
                                 cy.fit(); // Adjust the view to fit all elements
                             });
-                
+    
                              // Initialize Tippy.js Tooltip for "Show All Tables" Link
                             var toggleTableList = document.getElementById('toggleTableList');
                             var tableListContent = document.getElementById('tableListContainer').innerHTML;
-                
+    
                             tippy(toggleTableList, {
                                 content: tableListContent,
                                 allowHTML: true,
@@ -577,11 +569,11 @@ public class VisualizationGenerator implements IVisualizationGenerator {
                                     toggleTableList.textContent = 'Show All Tables';
                                 }
                             });
-                
+    
                             // Enable zoom and pan
                             cy.userPanningEnabled(true);
                             cy.userZoomingEnabled(true);
-                
+    
                             // Handle window resize
                             window.addEventListener('resize', function() {
                                 cy.resize();

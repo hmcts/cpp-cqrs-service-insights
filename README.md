@@ -68,9 +68,9 @@ Add the plugin configuration to your CQRS service module `pom.xml` as follows:
     </executions>
     <configuration>
         <rootDirectory>${project.basedir}/../</rootDirectory>
-        <changeLogsDir>${project.basedir}/../service-nme-viewstore/service-nme-viewstore-liquibase</changeLogsDir>
-        <commandApiDir>${project.basedir}/../service-nme-command/service-nme-command-api</commandApiDir>
-        <queryApiDir>${project.basedir}/../service-nme-query/service-nme-query-api</queryApiDir>
+        <changeLogsDir>${project.basedir}/../service-name-viewstore/service-name-viewstore-liquibase</changeLogsDir>
+        <commandApiDir>${project.basedir}/../service-name-command/service-name-command-api</commandApiDir>
+        <queryApiDir>${project.basedir}/../service-name-query/service-name-query-api</queryApiDir>
     </configuration>
 </plugin>
 ```

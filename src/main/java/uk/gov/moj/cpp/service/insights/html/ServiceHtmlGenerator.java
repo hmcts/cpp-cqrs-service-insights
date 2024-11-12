@@ -191,7 +191,7 @@ public class ServiceHtmlGenerator {
                 <script src="https://unpkg.com/cytoscape@3.30.2/dist/cytoscape.min.js"></script>
                 <style>
                     body { margin: 0; font-family: Arial, sans-serif; }
-                    #cy { height: 85vh; width: 100vw; border: 1px solid black; }
+                    #cy { height: 94vh; width: 100vw; border: 1px solid black; }
                     .controls { display: flex; align-items: center; gap: 10px; padding: 10px; background-color: #f4f4f4; }
                     .legend { display: flex; gap: 20px; align-items: center; }
                     .legend-item { display: flex; align-items: center; }
