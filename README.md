@@ -1,8 +1,7 @@
 
 # Insights Maven Plugin
 
-This Maven plugin (`uk.gov.moj.cpp.service:insights`) provides tools for managing and visualizing ACL (Access Control List) configurations, service insights, and schema visualizations. It is designed to assist in managing access control, schema dependencies, and service insight aggregates, with command and query API integrations.
-
+This Maven plugin (`uk.gov.moj.cpp.service:insights`) provides tools for managing and visualizing ACL (Access Control List) configurations, service insights, and schema visualizations. It is designed to assist in managing access control, schema dependencies, and service insight aggregates, with command and query API integrations. **The visualization feature is powered by Cytoscape**, a popular JavaScript library used to create interactive, graph-based representations.
 ## Table of Contents
 
 - [Features](#features)
@@ -51,7 +50,7 @@ This will install the plugin into your local Maven repository, allowing it to be
 
 ## Configuration
 
-Add the plugin configuration to your `pom.xml` as follows:
+Add the plugin configuration to your CQRS service module `pom.xml` as follows:
 
 ```xml
 <plugin>
@@ -69,19 +68,19 @@ Add the plugin configuration to your `pom.xml` as follows:
     </executions>
     <configuration>
         <rootDirectory>${project.basedir}/../</rootDirectory>
-        <changeLogsDir>${project.basedir}/../hearing-viewstore/hearing-viewstore-liquibase</changeLogsDir>
-        <commandApiDir>${project.basedir}/../hearing-command/hearing-command-api</commandApiDir>
-        <queryApiDir>${project.basedir}/../hearing-query/hearing-query-api</queryApiDir>
+        <changeLogsDir>${project.basedir}/../service-nme-viewstore/service-nme-viewstore-liquibase</changeLogsDir>
+        <commandApiDir>${project.basedir}/../service-nme-command/service-nme-command-api</commandApiDir>
+        <queryApiDir>${project.basedir}/../service-nme-query/service-nme-query-api</queryApiDir>
     </configuration>
 </plugin>
 ```
 
 ### Configuration Options
 
-- **`rootDirectory`**: Root directory of the project, used for finding core files and resources.
-- **`changeLogsDir`**: Directory containing the Liquibase changelogs for the viewstore.
-- **`commandApiDir`**: Directory containing the command API source files.
-- **`queryApiDir`**: Directory containing the query API source files.
+- **`rootDirectory`**: Root directory of the project, used for finding core files and resources for service-insights goal .
+- **`changeLogsDir`**: Directory containing the Liquibase changelogs for the viewstore (goal visualize-schema).
+- **`commandApiDir`**: Directory containing the command API source files (goal acl).
+- **`queryApiDir`**: Directory containing the query API source files (goal acl).
 
 ## Usage
 
@@ -107,31 +106,31 @@ This will run the `service-insights` goal, producing output and any relevant fil
 
 ## Example
 
-Here’s an example configuration within a `pom.xml` file for a project using this plugin:
+Here’s an example configuration within a `pom.xml` file for a project using this plugin (taken from hearing service):
 
 ```xml
 <build>
     <plugins>
-        <plugin>
-            <groupId>uk.gov.moj.cpp.service</groupId>
-            <artifactId>insights</artifactId>
-            <version>1.0.2</version>
-            <executions>
-                <execution>
-                    <goals>
-                        <goal>service-insights</goal>
-                        <goal>acl</goal>
-                        <goal>visualize-schema</goal>
-                    </goals>
-                </execution>
-            </executions>
-            <configuration>
-                <rootDirectory>${project.basedir}/../</rootDirectory>
-                <changeLogsDir>${project.basedir}/../hearing-viewstore/hearing-viewstore-liquibase</changeLogsDir>
-                <commandApiDir>${project.basedir}/../hearing-command/hearing-command-api</commandApiDir>
-                <queryApiDir>${project.basedir}/../hearing-query/hearing-query-api</queryApiDir>
-            </configuration>
-        </plugin>
+       <plugin>
+          <groupId>uk.gov.moj.cpp.service</groupId>
+          <artifactId>insights</artifactId>
+          <version>1.0.2</version>
+          <executions>
+             <execution>
+                <goals>
+                   <goal>service-insights</goal>
+                   <goal>acl</goal>
+                   <goal>visualize-schema</goal>
+                </goals>
+             </execution>
+          </executions>
+          <configuration>
+             <rootDirectory>${project.basedir}/../</rootDirectory>
+             <changeLogsDir>${project.basedir}/../hearing-viewstore/hearing-viewstore-liquibase</changeLogsDir>
+             <commandApiDir>${project.basedir}/../hearing-command/hearing-command-api</commandApiDir>
+             <queryApiDir>${project.basedir}/../hearing-query/hearing-query-api</queryApiDir>
+          </configuration>
+       </plugin>
     </plugins>
 </build>
 ```

@@ -7,11 +7,9 @@
     <!-- Basic Project Information -->
     <groupId>uk.gov.moj.cpp.service</groupId>
     <artifactId>insights</artifactId>
-<<<<<<< HEAD
-    <version>1.0.2-SNAPSHOT</version>
-=======
+
     <version>1.0.2</version>
->>>>>>> 8e40f1c (added readme.md, mojo for app insight)
+
     <name>Service Insights Parser Maven Plugin</name>
     <description>A Maven plugin to parse DRL files and extract action-group mappings.</description>
     <packaging>maven-plugin</packaging>
