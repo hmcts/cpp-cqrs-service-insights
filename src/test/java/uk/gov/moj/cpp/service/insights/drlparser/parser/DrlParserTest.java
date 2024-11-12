@@ -289,8 +289,7 @@ class DrlParserTest {
         ), queryActions.get("results.get-results-details"));
 
 
-
-    // Verify that non-relevant .drl files are skipped
+        // Verify that non-relevant .drl files are skipped
         assertFalse(commandActions.containsKey("OtherAction"), "Unexpected key found: OtherAction in commandActions");
         assertFalse(queryActions.containsKey("OtherAction"), "Unexpected key found: OtherAction in queryActions");
 

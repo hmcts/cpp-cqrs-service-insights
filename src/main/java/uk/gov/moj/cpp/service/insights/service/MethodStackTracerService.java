@@ -12,7 +12,7 @@ public interface MethodStackTracerService {
 
     Optional<ClassInfo> getClassInfo(String className);
 
-    String getMethodSignature(String className, String methodName, List<String> parameters);
+    String getMethodSignature(String className, String methodName);
 
     /**
      * Retrieves the entire method stack for the given method signature.

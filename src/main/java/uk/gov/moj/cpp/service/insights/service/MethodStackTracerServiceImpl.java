@@ -36,8 +36,8 @@ public class MethodStackTracerServiceImpl implements MethodStackTracerService {
     }
 
     @Override
-    public String getMethodSignature(String className, String methodName, List<String> parameters) {
-        return indexBuilder.getMethodSignature(className, methodName, parameters);
+    public String getMethodSignature(String className, String methodName) {
+        return indexBuilder.getMethodSignature(className, methodName);
     }
 
     @Override

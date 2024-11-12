@@ -4,7 +4,23 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
-public class StringListSorter {
+/**
+ * Utility class for sorting lists of strings with specific ordering rules.
+ * Provides methods to sort strings in a case-insensitive manner,
+ * prioritizing certain values.
+ *
+ * <p>
+ * This class is immutable and cannot be instantiated.
+ * </p>
+ */
+public final class StringListSorter {
+
+    /**
+     * Private constructor to prevent instantiation.
+     */
+    private StringListSorter() {
+        throw new UnsupportedOperationException("Utility class cannot be instantiated.");
+    }
 
     /**
      * Sorts the provided list of strings in ascending order in a case-insensitive manner.
@@ -30,4 +46,3 @@ public class StringListSorter {
         strings.sort(customComparator);
     }
 }
-

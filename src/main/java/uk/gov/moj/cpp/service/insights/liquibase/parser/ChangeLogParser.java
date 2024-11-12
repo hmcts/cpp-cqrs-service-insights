@@ -52,7 +52,8 @@ public class ChangeLogParser implements IChangeLogParser {
                             case "createTable" -> new CreateTableChange(changeElement);
                             case "addColumn" -> new AddColumnChange(changeElement);
                             case "addPrimaryKey" -> new AddPrimaryKeyChange(changeElement);
-                            case "addForeignKeyConstraint" -> new AddForeignKeyConstraintChange(changeElement);
+                            case "addForeignKeyConstraint" ->
+                                    new AddForeignKeyConstraintChange(changeElement);
                             case "renameTable" -> new RenameTableChange(changeElement);
                             case "renameColumn" -> new RenameColumnChange(changeElement);
                             case "dropTable" -> new DropTableChange(changeElement);

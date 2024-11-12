@@ -3,11 +3,11 @@ package uk.gov.moj.cpp.service.insights.drlparser;
 import uk.gov.moj.cpp.service.insights.drlparser.parser.DrlParser;
 import uk.gov.moj.cpp.service.insights.drlparser.parser.JavaClassIndexer;
 import uk.gov.moj.cpp.service.insights.drlparser.parser.model.ActionGroupMappings;
-import uk.gov.moj.cpp.service.insights.html.CytoscapeHTMLGenerator;
+import uk.gov.moj.cpp.service.insights.html.ACLHTMLGenerator;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -18,21 +18,23 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
-@Mojo(name = "parse-drl", defaultPhase = LifecyclePhase.GENERATE_SOURCES)
+@Mojo(name = "acl", defaultPhase = LifecyclePhase.GENERATE_SOURCES)
 public class DrlParserMojo extends AbstractMojo {
-    // Constants for titles and subtitles
-    private static final String EVENT_LIST_TITLE = "Event List";
-    private static final String EVENT_LIST_SUBTITLE = "All Events";
     private static final String COMMAND_RULE_LIST_TITLE = "Command Rule List";
     private static final String COMMAND_RULE_LIST_SUBTITLE = "All Rules";
     private static final String QUERY_RULE_LIST_TITLE = "Query Rule List";
     private static final String QUERY_RULE_LIST_SUBTITLE = "All Rules";
 
     /**
-     * List of directories containing DRL files.
+     * Directory containing Commaand API DRL files.
      */
-    @Parameter(property = "drlDirectories", required = true)
-    private List<String> drlDirectories;
+    @Parameter(property = "commandApiDir", required = true)
+    private File commandApiDir;
+    /**
+     * Directory containing QUeryAPI DRL files.
+     */
+    @Parameter(property = "queryApiDir", required = true)
+    private File queryApiDir;
     /**
      * The output file for the generated HTML.
      */
@@ -47,9 +49,7 @@ public class DrlParserMojo extends AbstractMojo {
     public void execute() throws MojoExecutionException {
         try {
             // Convert directory strings to Path objects
-            List<Path> paths = drlDirectories.stream()
-                    .map(Paths::get)
-                    .toList();
+            List<Path> paths = Arrays.asList(commandApiDir.toPath(), queryApiDir.toPath());
 
             // Initialize JavaClassIndexer (implementation not shown)
             JavaClassIndexer indexer = new JavaClassIndexer();
@@ -77,7 +77,7 @@ public class DrlParserMojo extends AbstractMojo {
             String commandRulePath = new File(targetDir, commandRule).getAbsolutePath();
             getLog().info("Generating Command HTML file at: " + commandRulePath);
             // Generate HTML for command rules
-            CytoscapeHTMLGenerator.generateHTMLFile(
+            ACLHTMLGenerator.generateHTMLFile(
                     mappings.getCommandActionToGroupsMap(),
                     commandRulePath,
                     COMMAND_RULE_LIST_TITLE,
@@ -86,7 +86,7 @@ public class DrlParserMojo extends AbstractMojo {
             String queryRulePath = new File(targetDir, queryRule).getAbsolutePath();
             getLog().info("Generating Query HTML file at: " + queryRulePath);
             // Generate HTML for query rules
-            CytoscapeHTMLGenerator.generateHTMLFile(
+            ACLHTMLGenerator.generateHTMLFile(
                     mappings.getQueryActionToGroupsMap(),
                     queryRulePath,
                     QUERY_RULE_LIST_TITLE,

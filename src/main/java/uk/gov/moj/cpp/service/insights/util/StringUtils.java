@@ -1,6 +1,5 @@
 package uk.gov.moj.cpp.service.insights.util;
 
-
 import uk.gov.moj.cpp.service.insights.drlparser.parser.JavaClassIndexer;
 
 import java.util.Optional;
@@ -10,14 +9,39 @@ import com.github.javaparser.ast.expr.MethodCallExpr;
 
 /**
  * Utility class for string operations.
+ * Provides methods to manipulate and analyze strings in various formats.
+ * This class is immutable and cannot be instantiated.
  */
-public class StringUtils {
+public final class StringUtils {
+
+    /**
+     * Private constructor to prevent instantiation.
+     */
+    private StringUtils() {
+        throw new UnsupportedOperationException("Utility class cannot be instantiated.");
+    }
 
     /**
      * Splits a camel case string into a human-readable format.
      *
-     * @param s Camel case string.
-     * @return Human-readable string.
+     * <p>
+     * The method performs the following steps:
+     * <ol>
+     *     <li>Removes the 'get' prefix if present.</li>
+     *     <li>Splits the string based on camel case patterns.</li>
+     *     <li>Capitalizes the first letter of each resulting word.</li>
+     * </ol>
+     * </p>
+     *
+     * <p>
+     * Example:
+     * <pre>{@code
+     * StringUtils.splitCamelCase("getUserName") // Returns "User Name"
+     * }</pre>
+     * </p>
+     *
+     * @param s the camel case string to split
+     * @return a human-readable string
      */
     public static String splitCamelCase(String s) {
         if (s == null || s.isEmpty()) {
@@ -59,20 +83,42 @@ public class StringUtils {
 
     /**
      * Converts a string to a human-readable format.
-     * <p>
-     * Rules:
-     * 1. If the string contains underscores ('_'):
-     * - Replace underscores with spaces.
-     * - Capitalize the first letter of each word.
-     * - Convert the remaining letters of each word to lowercase.
-     * 2. Else if the string is entirely in uppercase and contains no underscores:
-     * - Capitalize only the first character.
-     * - Convert the remaining characters to lowercase.
-     * 3. Else:
-     * - Return the original string as-is.
      *
-     * @param input The input string.
-     * @return Human-readable string.
+     * <p>
+     * The conversion rules are as follows:
+     * <ol>
+     *     <li>If the string contains underscores ('_'):
+     *         <ul>
+     *             <li>Replace underscores with spaces.</li>
+     *             <li>Capitalize the first letter of each word.</li>
+     *             <li>Convert the remaining letters of each word to lowercase.</li>
+     *         </ul>
+     *     </li>
+     *     <li>Else if the string is entirely in uppercase and contains no underscores:
+     *         <ul>
+     *             <li>Capitalize only the first character.</li>
+     *             <li>Convert the remaining characters to lowercase.</li>
+     *         </ul>
+     *     </li>
+     *     <li>Else:
+     *         <ul>
+     *             <li>Return the original string as-is.</li>
+     *         </ul>
+     *     </li>
+     * </ol>
+     * </p>
+     *
+     * <p>
+     * Examples:
+     * <pre>{@code
+     * StringUtils.humanReadable("USER_NAME") // Returns "User Name"
+     * StringUtils.humanReadable("USERNAME")  // Returns "Username"
+     * StringUtils.humanReadable("UserName")  // Returns "UserName"
+     * }</pre>
+     * </p>
+     *
+     * @param input the input string to convert
+     * @return a human-readable string
      */
     public static String humanReadable(String input) {
         if (input == null || input.isEmpty()) {
@@ -92,8 +138,8 @@ public class StringUtils {
      * Capitalizes the first letter of each word in the input string.
      * Converts the remaining letters of each word to lowercase.
      *
-     * @param input The input string with words separated by spaces.
-     * @return Capitalized string.
+     * @param input the input string with words separated by spaces
+     * @return a string with each word capitalized
      */
     private static String capitalizeWords(String input) {
         StringBuilder result = new StringBuilder();
@@ -118,8 +164,8 @@ public class StringUtils {
      * Capitalizes only the first letter of the input string.
      * Converts the remaining characters to lowercase.
      *
-     * @param input The input string.
-     * @return String with only the first character capitalized.
+     * @param input the input string
+     * @return a string with only the first character capitalized
      */
     private static String capitalizeFirstLetter(String input) {
         if (input.length() == 1) {
@@ -131,8 +177,8 @@ public class StringUtils {
     /**
      * Checks if the entire string is in uppercase.
      *
-     * @param input The input string.
-     * @return True if all characters are uppercase letters; false otherwise.
+     * @param input the input string to check
+     * @return {@code true} if all alphabetic characters are uppercase; {@code false} otherwise
      */
     private static boolean isAllUpperCase(String input) {
         for (char ch : input.toCharArray()) {
@@ -146,13 +192,18 @@ public class StringUtils {
     /**
      * Determines the method type based on its scope and static imports.
      *
-     * @param mce       MethodCallExpr instance.
-     * @param classInfo ClassInfo containing static imports.
-     * @return A string representing the method type.
+     * <p>
+     * The method checks whether a method call is qualified with a scope (e.g., {@code this.method()}),
+     * matches a static import, or is unqualified.
+     * </p>
+     *
+     * @param methodCallExpr the {@code MethodCallExpr} instance to analyze
+     * @param classInfo      the {@code ClassInfo} containing static imports information
+     * @return a string representing the method type, including its scope if applicable
      */
-    public static String determineMethodType(MethodCallExpr mce, JavaClassIndexer.ClassInfo classInfo) {
-        String methodName = mce.getNameAsString();
-        return mce.getScope()
+    public static String determineMethodType(MethodCallExpr methodCallExpr, JavaClassIndexer.ClassInfo classInfo) {
+        String methodName = methodCallExpr.getNameAsString();
+        return methodCallExpr.getScope()
                 .map(scope -> scope + "." + methodName + "()")
                 .orElseGet(() -> {
                     for (String staticImport : classInfo.getStaticImports()) {
@@ -169,12 +220,17 @@ public class StringUtils {
     }
 
     /**
-     * Extracts enum constant from an expression.
+     * Extracts an enum constant from an expression.
      *
-     * @param expr      Expression instance.
-     * @param classInfo ClassInfo for resolving variables.
-     * @param indexer   JavaClassIndexer instance.
-     * @return Enum constant as a string, or null if not applicable.
+     * <p>
+     * The method handles both name expressions and string literals,
+     * resolving them using the provided {@code ClassInfo} and {@code JavaClassIndexer}.
+     * </p>
+     *
+     * @param expr      the {@code Expression} instance to extract from
+     * @param classInfo the {@code ClassInfo} for resolving variables
+     * @param indexer   the {@code JavaClassIndexer} instance
+     * @return the enum constant as a string, or {@code null} if not applicable
      */
     public static String extractEnumConstant(Expression expr, JavaClassIndexer.ClassInfo classInfo, JavaClassIndexer indexer) {
         if (expr.isNameExpr()) {
@@ -187,12 +243,17 @@ public class StringUtils {
     }
 
     /**
-     * Extracts string value from an expression.
+     * Extracts a string value from an expression.
      *
-     * @param expr      Expression instance.
-     * @param classInfo ClassInfo for resolving variables.
-     * @param indexer   JavaClassIndexer instance.
-     * @return String value, or null if not applicable.
+     * <p>
+     * The method handles both string literals and name expressions,
+     * resolving them using the provided {@code ClassInfo} and {@code JavaClassIndexer}.
+     * </p>
+     *
+     * @param expr      the {@code Expression} instance to extract from
+     * @param classInfo the {@code ClassInfo} for resolving variables
+     * @param indexer   the {@code JavaClassIndexer} instance
+     * @return the extracted string value, or {@code null} if not applicable
      */
     public static String extractStringValue(Expression expr, JavaClassIndexer.ClassInfo classInfo, JavaClassIndexer indexer) {
         if (expr.isStringLiteralExpr()) {
@@ -208,10 +269,14 @@ public class StringUtils {
     /**
      * Resolves the value of a static variable within a class.
      *
-     * @param varName   Variable name.
-     * @param classInfo ClassInfo containing variable details.
-     * @param indexer   JavaClassIndexer instance.
-     * @return Optional containing the resolved value.
+     * <p>
+     * The method attempts to retrieve the initializer of a static variable and returns its string representation.
+     * </p>
+     *
+     * @param varName   the name of the variable to resolve
+     * @param classInfo the {@code ClassInfo} containing variable details
+     * @param indexer   the {@code JavaClassIndexer} instance
+     * @return an {@code Optional} containing the resolved value if found; otherwise, an empty {@code Optional}
      */
     private static Optional<String> resolveStaticVariable(String varName, JavaClassIndexer.ClassInfo classInfo, JavaClassIndexer indexer) {
         return classInfo.getField(varName)
@@ -220,4 +285,3 @@ public class StringUtils {
                 .map(init -> init.replace("\"", ""));
     }
 }
-

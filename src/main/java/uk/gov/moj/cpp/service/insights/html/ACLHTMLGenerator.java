@@ -7,7 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class CytoscapeHTMLGenerator {
+public class ACLHTMLGenerator {
 
     // Define constants for CSS classes
     private static final String CLASS_PUBLIC_COMMAND = "public-command";
@@ -43,7 +43,7 @@ public class CytoscapeHTMLGenerator {
         htmlBuilder.append("<head>\n");
         htmlBuilder.append("    <meta charset=\"UTF-8\">\n");
         htmlBuilder.append("    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n");
-        htmlBuilder.append("    <title>Graph Visualization</title>\n");
+        htmlBuilder.append("    <title>" + primaryText + " Graph Visualization</title>\n");
         htmlBuilder.append("    <script src=\"https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.30.2/cytoscape.min.js\"></script>\n");
         htmlBuilder.append("    <link href=\"https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css\" rel=\"stylesheet\">\n");
         htmlBuilder.append("    <style>\n");
@@ -86,19 +86,19 @@ public class CytoscapeHTMLGenerator {
 
         // Continue building the main section
         htmlBuilder.append("""
-                                </ul>
-                            </div>
-                            <div id="main" class="container-fluid">
-                                <input type="text" id="search" placeholder="Search node labels..." class="form-control mb-3" />
-                                <div id="cy"></div>
-                                <div id="event-links" class="mt-4"></div>
-                            </div>
-                            <script>
-                                function showGraph(event) {
-                                    let elements = [];
-                                    document.getElementById('event-links').innerHTML = '';
-                                    if (event === 'all') {
-                        """);
+                        </ul>
+                    </div>
+                    <div id="main" class="container-fluid">
+                        <input type="text" id="search" placeholder="Search node labels..." class="form-control mb-3" />
+                        <div id="cy"></div>
+                        <div id="event-links" class="mt-4"></div>
+                    </div>
+                    <script>
+                        function showGraph(event) {
+                            let elements = [];
+                            document.getElementById('event-links').innerHTML = '';
+                            if (event === 'all') {
+                """);
 
         // Append elements for all events
         for (Map.Entry<String, Set<String>> entry : eventCommandMap.entrySet()) {
@@ -122,8 +122,8 @@ public class CytoscapeHTMLGenerator {
 
         // Continue with the else block for individual events
         htmlBuilder.append("""
-                                    } else {
-                        """);
+                            } else {
+                """);
 
         // Append elements for individual events
         for (Map.Entry<String, Set<String>> entry : eventCommandMap.entrySet()) {
@@ -155,119 +155,119 @@ public class CytoscapeHTMLGenerator {
 
         // Continue with Cytoscape initialization and other scripts
         htmlBuilder.append("""
+                            }
+                            var cy = cytoscape({
+                                container: document.getElementById('cy'),
+                                elements: elements,
+                                style: [
+                                    {
+                                        selector: 'node',
+                                        style: {
+                                            'background-color': '#3498DB',
+                                            'label': 'data(label)',
+                                            'width': 20,
+                                            'height': 20,
+                                            'font-size': 10,
+                                            'text-valign': 'center',
+                                            'text-halign': 'center',
+                                            'color': '#2C3E50'
+                                        }
+                                    },
+                                    {
+                                        selector: 'edge',
+                                        style: {
+                                            'width': 1.5,
+                                            'line-color': '#BDC3C7',
+                                            'target-arrow-color': '#BDC3C7',
+                                            'target-arrow-shape': 'triangle'
+                                        }
+                                    },
+                                    {
+                                        selector: 'node.highlighted',
+                                        style: {
+                                            'background-color': '#F1C40F',
+                                            'border-color': '#F1C40F',
+                                            'border-width': 2
+                                        }
+                                    },
+                                    {
+                                        selector: 'edge.highlighted',
+                                        style: {
+                                            'line-color': '#F1C40F',
+                                            'width': 2
+                                        }
+                                    },
+                                    {
+                                        selector: '.public-command',
+                                        style: {
+                                            'line-color': '#E74C3C',
+                                            'target-arrow-color': '#E74C3C',
+                                            'width': 2
+                                        }
+                                    },
+                                    {
+                                        selector: '.unknown',
+                                        style: {
+                                            'line-color': '#95A5A6',
+                                            'target-arrow-color': '#95A5A6',
+                                            'width': 1.5
+                                        }
+                                    },
+                                    {
+                                        selector: '.command',
+                                        style: {
+                                            'line-color': '#2ECC71',
+                                            'target-arrow-color': '#2ECC71',
+                                            'width': 2
+                                        }
+                                    },
+                                    {
+                                        selector: '.query',
+                                        style: {
+                                            'line-color': '#9B59B6',
+                                            'target-arrow-color': '#9B59B6',
+                                            'width': 2
+                                        }
                                     }
-                                    var cy = cytoscape({
-                                        container: document.getElementById('cy'),
-                                        elements: elements,
-                                        style: [
-                                            {
-                                                selector: 'node',
-                                                style: {
-                                                    'background-color': '#3498DB',
-                                                    'label': 'data(label)',
-                                                    'width': 20,
-                                                    'height': 20,
-                                                    'font-size': 10,
-                                                    'text-valign': 'center',
-                                                    'text-halign': 'center',
-                                                    'color': '#2C3E50'
-                                                }
-                                            },
-                                            {
-                                                selector: 'edge',
-                                                style: {
-                                                    'width': 1.5,
-                                                    'line-color': '#BDC3C7',
-                                                    'target-arrow-color': '#BDC3C7',
-                                                    'target-arrow-shape': 'triangle'
-                                                }
-                                            },
-                                            {
-                                                selector: 'node.highlighted',
-                                                style: {
-                                                    'background-color': '#F1C40F',
-                                                    'border-color': '#F1C40F',
-                                                    'border-width': 2
-                                                }
-                                            },
-                                            {
-                                                selector: 'edge.highlighted',
-                                                style: {
-                                                    'line-color': '#F1C40F',
-                                                    'width': 2
-                                                }
-                                            },
-                                            {
-                                                selector: '.public-command',
-                                                style: {
-                                                    'line-color': '#E74C3C',
-                                                    'target-arrow-color': '#E74C3C',
-                                                    'width': 2
-                                                }
-                                            },
-                                            {
-                                                selector: '.unknown',
-                                                style: {
-                                                    'line-color': '#95A5A6',
-                                                    'target-arrow-color': '#95A5A6',
-                                                    'width': 1.5
-                                                }
-                                            },
-                                            {
-                                                selector: '.command',
-                                                style: {
-                                                    'line-color': '#2ECC71',
-                                                    'target-arrow-color': '#2ECC71',
-                                                    'width': 2
-                                                }
-                                            },
-                                            {
-                                                selector: '.query',
-                                                style: {
-                                                    'line-color': '#9B59B6',
-                                                    'target-arrow-color': '#9B59B6',
-                                                    'width': 2
-                                                }
-                                            }
-                                        ],
-                                        layout: {
-                                            name: 'cose',
-                                            fit: true,
-                                            padding: 50,
-                                            nodeOverlap: 10,
-                                            idealEdgeLength: 100,
-                                            edgeElasticity: 100,
-                                            nodeRepulsion: 4000,
-                                            gravity: 0.8,
-                                            numIter: 1000
-                                        }
-                                    });
-
-                                    // Highlight selected node and its edges
-                                    cy.on('tap', 'node', function(evt) {
-                                        const node = evt.target;
-                                        cy.elements().removeClass('highlighted');
-                                        node.addClass('highlighted');
-                                        node.connectedEdges().addClass('highlighted').connectedNodes().addClass('highlighted');
-                                    });
-
-                                    // Search functionality
-                                    document.getElementById('search').addEventListener('input', function(e) {
-                                        const query = e.target.value.toLowerCase();
-                                        cy.elements().removeClass('highlighted');
-                                        if (query !== '') {
-                                            const matchingNodes = cy.nodes().filter(node => node.data('label').toLowerCase().includes(query));
-                                            matchingNodes.addClass('highlighted');
-                                        }
-                                    });
+                                ],
+                                layout: {
+                                    name: 'cose',
+                                    fit: true,
+                                    padding: 50,
+                                    nodeOverlap: 10,
+                                    idealEdgeLength: 100,
+                                    edgeElasticity: 100,
+                                    nodeRepulsion: 4000,
+                                    gravity: 0.8,
+                                    numIter: 1000
                                 }
-
-                                // Automatically display the first event graph
-                                showGraph('%s');
-                            </script>
-                        </body>
-                        </html>
-                        """.formatted(escapeJs(eventCommandMap.keySet().iterator().next())));
+                            });
+                
+                            // Highlight selected node and its edges
+                            cy.on('tap', 'node', function(evt) {
+                                const node = evt.target;
+                                cy.elements().removeClass('highlighted');
+                                node.addClass('highlighted');
+                                node.connectedEdges().addClass('highlighted').connectedNodes().addClass('highlighted');
+                            });
+                
+                            // Search functionality
+                            document.getElementById('search').addEventListener('input', function(e) {
+                                const query = e.target.value.toLowerCase();
+                                cy.elements().removeClass('highlighted');
+                                if (query !== '') {
+                                    const matchingNodes = cy.nodes().filter(node => node.data('label').toLowerCase().includes(query));
+                                    matchingNodes.addClass('highlighted');
+                                }
+                            });
+                        }
+                
+                        // Automatically display the first event graph
+                        showGraph('%s');
+                    </script>
+                </body>
+                </html>
+                """.formatted(escapeJs(eventCommandMap.keySet().iterator().next())));
 
         // Write the HTML content to the output file using try-with-resources
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputPath))) {
@@ -300,7 +300,7 @@ public class CytoscapeHTMLGenerator {
      * @return The escaped HTML string.
      */
     private static String escapeHtml(String text) {
-        if (text == null) return "";
+        if (text == null) {return "";}
         return text.replace("&", "&amp;")
                 .replace("<", "&lt;")
                 .replace(">", "&gt;")
@@ -315,7 +315,7 @@ public class CytoscapeHTMLGenerator {
      * @return The escaped JavaScript string.
      */
     private static String escapeJs(String text) {
-        if (text == null) return "";
+        if (text == null) {return "";}
         return text.replace("\\", "\\\\")
                 .replace("'", "\\'")
                 .replace("\"", "\\\"")

@@ -1,4 +1,4 @@
-package uk.gov.moj.cpp.service.insights.liquibase;
+package uk.gov.moj.cpp.service.insights.util;
 
 
 import uk.gov.moj.cpp.service.insights.liquibase.collector.FileCollector;

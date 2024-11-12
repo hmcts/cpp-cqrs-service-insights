@@ -1,5 +1,7 @@
 package uk.gov.moj.cpp.service.insights.indexer;
 
+import static java.lang.System.out;
+
 import uk.gov.moj.cpp.service.insights.model.ClassInfo;
 import uk.gov.moj.cpp.service.insights.model.DependencyInfo;
 import uk.gov.moj.cpp.service.insights.model.MethodInfo;
@@ -12,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -28,12 +31,8 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.body.TypeDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
-import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 
-/**
- * Implementation of IndexBuilder that builds an index of Java classes.
- */
 public class IndexBuilderImpl implements IndexBuilder {
 
     private static final Set<String> INJECTION_ANNOTATIONS = Set.of(
@@ -47,6 +46,7 @@ public class IndexBuilderImpl implements IndexBuilder {
 
     // Map of interface name to implementing class names
     private final Map<String, Set<String>> interfaceImplMap = new ConcurrentHashMap<>();
+
     // Assuming callGraphResolver is a field that needs to be defined and initialized
     private final CallGraphResolver callGraphResolver = new CallGraphResolver();
 
@@ -60,13 +60,15 @@ public class IndexBuilderImpl implements IndexBuilder {
             indexSourcePath(sourcePath);
         }
         resolveInterfaceImplementations();
+        resolveInheritedMethods(); // New method to resolve inherited methods
     }
 
     private void indexSourcePath(Path sourcePath) throws IOException {
         Files.walkFileTree(sourcePath, new SimpleFileVisitor<>() {
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-                if (file.toString().endsWith(".java")) {
+
+                if (file.toString().endsWith(".java") && !file.getFileName().toString().endsWith("Test.java")) {
                     try {
                         parseJavaFile(file);
                     } catch (IOException e) {
@@ -104,6 +106,16 @@ public class IndexBuilderImpl implements IndexBuilder {
         ClassInfo classInfo = classInfoMap.computeIfAbsent(fullClassName, k -> new ClassInfo(fullClassName, packageName, importMap));
 
         if (typeDecl instanceof ClassOrInterfaceDeclaration coiDecl) {
+            // Handle superclass relationships
+            if (coiDecl.getExtendedTypes().size() > 0) {
+                for (ClassOrInterfaceType superClass : coiDecl.getExtendedTypes()) {
+                    String superClassName = superClass.getNameWithScope();
+                    String superClassFullName = resolveFullyQualifiedClassName(superClassName, packageName, importMap);
+                    if (superClassFullName != null) {
+                        classInfo.setSuperClass(superClassFullName);
+                    }
+                }
+            }
             if (coiDecl.isInterface()) {
                 // If it's an interface, ensure it's in the interfaceImplMap with an empty set
                 interfaceImplMap.putIfAbsent(fullClassName, ConcurrentHashMap.newKeySet());
@@ -149,6 +161,7 @@ public class IndexBuilderImpl implements IndexBuilder {
     }
 
     private void processMethods(ClassOrInterfaceDeclaration coiDecl, ClassInfo classInfo, String fullClassName) {
+
         for (MethodDeclaration methodDecl : coiDecl.getMethods()) {
             String methodSignature = generateMethodSignature(fullClassName, methodDecl);
             MethodInfo methodInfo = new MethodInfo(methodSignature, methodDecl);
@@ -164,8 +177,8 @@ public class IndexBuilderImpl implements IndexBuilder {
             classInfo.addMethod(methodInfo); // Treating constructors as methods
 
             boolean isConstructorInjected = ASTUtils.hasAnyAnnotation(constructorDecl, INJECTION_ANNOTATIONS);
-            if(!isConstructorInjected){
-                isConstructorInjected = ASTUtils.hasConstructorInjection(coiDecl.getConstructors(),INJECTION_ANNOTATIONS);
+            if (!isConstructorInjected) {
+                isConstructorInjected = ASTUtils.hasConstructorInjection(coiDecl.getConstructors(), INJECTION_ANNOTATIONS);
             }
             // Add all constructor parameters as dependencies
             for (Parameter param : constructorDecl.getParameters()) {
@@ -225,7 +238,7 @@ public class IndexBuilderImpl implements IndexBuilder {
                         String implClass = implClasses.iterator().next();
                         dependency.setType(implClass);
                         dependency.addImplementingClass(implClass);
-                        System.out.println("Resolved interface dependency: " + depType + " to " + implClass);
+                        out.println("Resolved interface dependency: " + depType + " to " + implClass);
                     } else if (implClasses.size() > 1) {
                         // Handle multiple implementations, possibly by selecting one or marking as ambiguous
                         System.err.println("Multiple implementations found for interface: " + depType + ". Dependency resolution ambiguous for dependency: " + dependency.getName());
@@ -240,15 +253,42 @@ public class IndexBuilderImpl implements IndexBuilder {
         }
     }
 
+    /**
+     * Resolves and aggregates inherited methods from superclasses into each ClassInfo.
+     */
+    private void resolveInheritedMethods() {
+        for (ClassInfo classInfo : classInfoMap.values()) {
+            String superClass = classInfo.getSuperclassName();
+            Set<String> visitedClasses = new HashSet<>();
+            while (superClass != null && !visitedClasses.contains(superClass)) {
+                visitedClasses.add(superClass);
+                ClassInfo superClassInfo = classInfoMap.get(superClass);
+                if (superClassInfo != null) {
+                    // Add methods from superclass if not already present
+                    for (MethodInfo method : superClassInfo.getMethods().values()) {
+                        if (!classInfo.hasMethod(method.getSignature())) {
+                            classInfo.addInheritedMethod(method);
+                        }
+                    }
+                    // Move up the hierarchy
+                    superClass = superClassInfo.getSuperclassName();
+                } else {
+                    // Superclass not found in index, possibly java.lang.Object or external library
+                    // Optionally, handle external superclasses here
+                    superClass = null;
+                }
+            }
+        }
+    }
+
     @Override
     public Optional<ClassInfo> getClassInfo(String className) {
         return Optional.ofNullable(classInfoMap.get(className));
     }
 
     @Override
-    public String getMethodSignature(String className, String methodName, List<String> parameters) {
-        String params = String.join(",", parameters);
-        return className + "#" + methodName + "(" + params + ")";
+    public String getMethodSignature(String className, String methodName) {
+        return className + "#" + methodName ;
     }
 
     // Additional getter for classInfoMap if needed
@@ -272,7 +312,7 @@ public class IndexBuilderImpl implements IndexBuilder {
         BodyDeclaration<?> bodyDecl = methodInfoOpt.get().getMethodDeclaration();
 
         if (bodyDecl instanceof MethodDeclaration methodDecl) {
-            Optional<String> body = methodDecl.getBody().map(BlockStmt::toString);
+            Optional<String> body = methodDecl.getBody().map(v -> v.toString());
             if (body.isPresent()) {
                 return body;
             } else {
@@ -320,7 +360,7 @@ public class IndexBuilderImpl implements IndexBuilder {
             if (implMethodInfoOpt.isPresent()) {
                 BodyDeclaration<?> implBodyDecl = implMethodInfoOpt.get().getMethodDeclaration();
                 if (implBodyDecl instanceof MethodDeclaration implMethodDecl) {
-                    return implMethodDecl.getBody().map(BlockStmt::toString);
+                    return implMethodDecl.getBody().map(v -> v.toString());
                 } else if (implBodyDecl instanceof ConstructorDeclaration implConstructorDecl) {
                     return Optional.of(implConstructorDecl.getBody().toString());
                 }
@@ -347,6 +387,7 @@ public class IndexBuilderImpl implements IndexBuilder {
         public Optional<MethodInfo> findMethodInfo(String methodSignature) {
             // Implementation to find MethodInfo based on methodSignature
             // This could involve looking up in classInfoMap or another data structure
+            // For demonstration, return empty
             return Optional.empty(); // Placeholder
         }
     }

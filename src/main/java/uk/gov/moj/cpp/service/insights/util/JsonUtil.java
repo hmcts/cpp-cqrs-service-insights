@@ -3,12 +3,25 @@ package uk.gov.moj.cpp.service.insights.util;
 import java.util.List;
 import java.util.Map;
 
-public abstract class JsonUtil {
+/**
+ * Utility class for JSON operations.
+ * Provides methods to convert Java Maps and Lists to JSON-formatted strings.
+ * This class is immutable and cannot be instantiated.
+ */
+public final class JsonUtil {
+
     /**
-     * Converts a Map<String, String> to a JSON-formatted string.
+     * Private constructor to prevent instantiation.
+     */
+    private JsonUtil() {
+        throw new UnsupportedOperationException("Utility class cannot be instantiated.");
+    }
+
+    /**
+     * Converts a {@code Map<String, String>} to a JSON-formatted string.
      *
-     * @param map The map to convert.
-     * @return A JSON-formatted string representing the map.
+     * @param map the map to convert
+     * @return a JSON-formatted string representing the map
      */
     public static String mapToJson(Map<String, String> map) {
         StringBuilder jsonBuilder = new StringBuilder();
@@ -34,27 +47,31 @@ public abstract class JsonUtil {
     /**
      * Converts a list of strings to a JSON array string.
      *
-     * @param list The list of strings to convert.
-     * @return A JSON array string.
+     * @param list the list of strings to convert
+     * @return a JSON array string
      */
     public static String toJsonArray(List<String> list) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("[");
+        StringBuilder jsonArrayBuilder = new StringBuilder();
+        jsonArrayBuilder.append("[");
+
         for (int i = 0; i < list.size(); i++) {
-            sb.append("\"").append(escapeJson(list.get(i))).append("\"");
+            jsonArrayBuilder.append("\"")
+                    .append(escapeJson(list.get(i)))
+                    .append("\"");
             if (i < list.size() - 1) {
-                sb.append(",");
+                jsonArrayBuilder.append(",");
             }
         }
-        sb.append("]");
-        return sb.toString();
+
+        jsonArrayBuilder.append("]");
+        return jsonArrayBuilder.toString();
     }
 
     /**
      * Escapes special characters in a string for JSON formatting.
      *
-     * @param text The string to escape.
-     * @return The escaped string.
+     * @param text the string to escape
+     * @return the escaped string
      */
     private static String escapeJson(String text) {
         if (text == null) {
