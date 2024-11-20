@@ -19,22 +19,14 @@ public final class DropIndexChange implements Change {
         String indexName = element.getAttribute("indexName");
 
         if (tableName.isEmpty() || indexName.isEmpty()) {
-            System.out.println("Warning: Missing tableName or indexName in dropIndex change.");
             return;
         }
 
         Table table = tables.get(tableName);
         if (table == null) {
-            System.out.println("Warning: Table '" + tableName + "' not found for dropping index '" + indexName + "'.");
             return;
         }
 
         boolean removed = table.indexes().removeIf(index -> index.name().equalsIgnoreCase(indexName));
-
-        if (removed) {
-            System.out.println("Dropped index '" + indexName + "' from table '" + tableName + "'.");
-        } else {
-            System.out.println("Warning: Index '" + indexName + "' not found in table '" + tableName + "'.");
-        }
     }
 }

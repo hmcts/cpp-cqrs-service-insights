@@ -42,8 +42,6 @@ public final class RenameTableChange implements Change {
                     }
                 }
             }
-        } else {
-            System.out.println("Warning: Table to rename not found: " + oldTableName);
         }
     }
 }

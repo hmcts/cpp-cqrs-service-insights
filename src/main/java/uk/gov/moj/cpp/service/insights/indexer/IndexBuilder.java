@@ -32,7 +32,6 @@ public interface IndexBuilder {
      *
      * @param className  Fully qualified class name.
      * @param methodName Method name.
-
      * @return Method signature string.
      */
     String getMethodSignature(String className, String methodName);

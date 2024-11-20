@@ -20,7 +20,12 @@ import uk.gov.moj.cpp.service.insights.util.ServiceUtil.ModuleScanResult;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -43,6 +48,49 @@ public class ServiceMojo extends AbstractMojo {
 
     @Parameter(property = "schemaFileName", required = false, defaultValue = "service-visualization.html")
     private String serviceFileName;
+
+    public static MethodProcessingResult processMethodBody(String methodBody,
+                                                           Map<String, String> classNameEventNameMapping,
+                                                           List<String> aggregatesNames, final Log log) {
+        MethodProcessingResult result = new MethodProcessingResult();
+        List<String> generatedEvents = new ArrayList<>();
+        List<String> matchingLines = new ArrayList<>();
+
+        String[] lines = methodBody.split("\\R");
+
+        classNameEventNameMapping.forEach((className, eventName) -> {
+            String regex = "\\b" + Pattern.quote(className) + "\\b(?!\\.class)";
+            Pattern pattern = Pattern.compile(regex);
+
+            for (String line : lines) {
+                Matcher matcher = pattern.matcher(line);
+                if (matcher.find()) {
+                    if (!generatedEvents.contains(eventName)) {
+                        result.addGeneratedEvent(eventName);
+                        generatedEvents.add(eventName);
+                    }
+                    matchingLines.add(line.trim());
+                }
+            }
+        });
+
+        if (!generatedEvents.isEmpty()) {
+            log.info("Generated Events: " + generatedEvents);
+        }
+        if (!matchingLines.isEmpty()) {
+            log.info("Matching Lines:");
+            matchingLines.forEach(log::info);
+        }
+
+        aggregatesNames.forEach(aggregate -> {
+            String regex = "\\b" + Pattern.quote(aggregate) + "\\b";
+            if (Pattern.compile(regex).matcher(methodBody).find()) {
+                result.addUsedAggregate(aggregate.replace(".class", ""));
+            }
+        });
+
+        return result;
+    }
 
     @Override
     public void execute() throws MojoExecutionException {
@@ -218,48 +266,5 @@ public class ServiceMojo extends AbstractMojo {
         } catch (IOException e) {
             log.error("Failed to generate HTML file at " + outputPath.toAbsolutePath(), e);
         }
-    }
-
-    public static MethodProcessingResult processMethodBody(String methodBody,
-                                                           Map<String, String> classNameEventNameMapping,
-                                                           List<String> aggregatesNames, final Log log) {
-        MethodProcessingResult result = new MethodProcessingResult();
-        List<String> generatedEvents = new ArrayList<>();
-        List<String> matchingLines = new ArrayList<>();
-
-        String[] lines = methodBody.split("\\R");
-
-        classNameEventNameMapping.forEach((className, eventName) -> {
-            String regex = "\\b" + Pattern.quote(className) + "\\b(?!\\.class)";
-            Pattern pattern = Pattern.compile(regex);
-
-            for (String line : lines) {
-                Matcher matcher = pattern.matcher(line);
-                if (matcher.find()) {
-                    if (!generatedEvents.contains(eventName)) {
-                        result.addGeneratedEvent(eventName);
-                        generatedEvents.add(eventName);
-                    }
-                    matchingLines.add(line.trim());
-                }
-            }
-        });
-
-        if (!generatedEvents.isEmpty()) {
-            log.info("Generated Events: " + generatedEvents);
-        }
-        if (!matchingLines.isEmpty()) {
-            log.info("Matching Lines:");
-            matchingLines.forEach(log::info);
-        }
-
-        aggregatesNames.forEach(aggregate -> {
-            String regex = "\\b" + Pattern.quote(aggregate) + "\\b";
-            if (Pattern.compile(regex).matcher(methodBody).find()) {
-                result.addUsedAggregate(aggregate.replace(".class", ""));
-            }
-        });
-
-        return result;
     }
 }

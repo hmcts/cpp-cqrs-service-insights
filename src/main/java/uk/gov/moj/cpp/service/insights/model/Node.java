@@ -2,10 +2,10 @@ package uk.gov.moj.cpp.service.insights.model;
 
 
 public class Node {
-    private String id;
-    private String label;
-    private String type;
-    private String parent; // Optional
+    private final String id;
+    private final String label;
+    private final String type;
+    private final String parent; // Optional
 
     // Constructor without parent
     public Node(String id, String label, String type) {

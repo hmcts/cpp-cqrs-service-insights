@@ -9,9 +9,9 @@ import java.util.Map;
  * Represents the graph model containing nodes and edges.
  */
 public class Model {
-    private List<Node> nodes;
-    private List<Edge> edges;
-    private Map<String, Node> nodeMap; // For quick lookup
+    private final List<Node> nodes;
+    private final List<Edge> edges;
+    private final Map<String, Node> nodeMap; // For quick lookup
 
     public Model() {
         nodes = new ArrayList<>();

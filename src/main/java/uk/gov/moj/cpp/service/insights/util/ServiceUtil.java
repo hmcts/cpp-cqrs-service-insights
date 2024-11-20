@@ -222,10 +222,10 @@ public final class ServiceUtil {
                                     methodDecl.getAnnotationByName("Handles").ifPresent(annotation -> {
                                         String handlesValue = extractHandlesValue(annotation);
                                         if (handlesValue != null && !handlesValue.isBlank()) {
-                                           String params = methodDecl.getParameters().stream()
-                                                        .map(p -> p.getType().asString())
-                                                        .collect(Collectors.joining(","));
-                                            String methodName =     methodDecl.getNameAsString() + "(" + params + ")";
+                                            String params = methodDecl.getParameters().stream()
+                                                    .map(p -> p.getType().asString())
+                                                    .collect(Collectors.joining(","));
+                                            String methodName = methodDecl.getNameAsString() + "(" + params + ")";
 
                                             String className = getFullyQualifiedClassName(javaDirectory, javaFile, compilationUnit, classDecl);
                                             handles.add(new HandlesInfo(className, methodName, handlesValue));
@@ -466,6 +466,46 @@ public final class ServiceUtil {
     }
 
     /**
+     * Extracts the service name using regex.
+     *
+     * @param path The file path from which to extract the service name.
+     * @return The extracted service name, or null if not found.
+     */
+    public static String getServiceNameRegex(String path) {
+        Pattern pattern = Pattern.compile("cpp\\.context\\.([^/]+)");
+        Matcher matcher = pattern.matcher(path);
+        if (matcher.find()) {
+            return matcher.group(1).replace(".", "");
+        }
+        return null;
+    }
+
+    public static Set<String> scanForServiceInQuotes(String methodSourceCode) {
+        Set<String> namesCalled = new HashSet<>();
+        String[] lines = methodSourceCode.split("\n");
+        for (String line : lines) {
+            int startIndex = 0;
+            while ((startIndex = line.indexOf("\"", startIndex)) != -1) {
+                int endIndex = line.indexOf("\"", startIndex + 1);
+                if (endIndex != -1) {
+                    String quotedText = line.substring(startIndex + 1, endIndex);
+                    if (!quotedText.contains(" ")) {  // Ensure no spaces in the quoted text
+                        SERVICE_NAMES.forEach(s -> {
+                            if (quotedText.contains(s)) {
+                                namesCalled.add(quotedText);
+                            }
+                        });
+                    }
+                    startIndex = endIndex + 1;
+                } else {
+                    break;
+                }
+            }
+        }
+        return namesCalled;
+    }
+
+    /**
      * Record to represent information about a static String variable.
      */
     public record VariableInfo(String className, String variableName, String variableValue) {
@@ -554,45 +594,5 @@ public final class ServiceUtil {
             Objects.requireNonNull(handles, "handles cannot be null");
             Objects.requireNonNull(aggregates, "aggregates cannot be null");
         }
-    }
-
-    /**
-     * Extracts the service name using regex.
-     *
-     * @param path The file path from which to extract the service name.
-     * @return The extracted service name, or null if not found.
-     */
-    public static String getServiceNameRegex(String path) {
-        Pattern pattern = Pattern.compile("cpp\\.context\\.([^/]+)");
-        Matcher matcher = pattern.matcher(path);
-        if (matcher.find()) {
-            return matcher.group(1).replace(".","");
-        }
-        return null;
-    }
-
-    public static Set<String> scanForServiceInQuotes(String methodSourceCode) {
-        Set<String> namesCalled = new HashSet<>();
-        String[] lines = methodSourceCode.split("\n");
-        for (String line : lines) {
-            int startIndex = 0;
-            while ((startIndex = line.indexOf("\"", startIndex)) != -1) {
-                int endIndex = line.indexOf("\"", startIndex + 1);
-                if (endIndex != -1) {
-                    String quotedText = line.substring(startIndex + 1, endIndex);
-                    if (!quotedText.contains(" ")) {  // Ensure no spaces in the quoted text
-                        SERVICE_NAMES.forEach(s -> {
-                            if (quotedText.contains(s)) {
-                                namesCalled.add(quotedText);
-                            }
-                        });
-                    }
-                    startIndex = endIndex + 1;
-                } else {
-                    break;
-                }
-            }
-        }
-        return namesCalled;
     }
 }

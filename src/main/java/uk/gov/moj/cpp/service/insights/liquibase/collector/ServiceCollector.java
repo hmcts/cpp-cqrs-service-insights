@@ -16,14 +16,12 @@ public class ServiceCollector implements IServiceCollector {
         File root = new File(rootDirectory);
 
         if (!root.exists() || !root.isDirectory()) {
-            System.out.println("Invalid root directory: " + rootDirectory);
             return services;
         }
 
         // List all subdirectories in the root directory
         File[] subDirs = root.listFiles(File::isDirectory);
         if (subDirs == null) {
-            System.out.println("No subdirectories found in root directory: " + rootDirectory);
             return services;
         }
 
@@ -45,10 +43,6 @@ public class ServiceCollector implements IServiceCollector {
                             new LinkedHashMap<>()
                     );
                     services.add(service);
-                    System.out.println("Found service: " + serviceName + " with Liquibase directory: " + liquibaseDirPath);
-                } else {
-                    System.out.println("Liquibase directory not found for service: " + serviceName
-                            + " at " + liquibaseDirPath);
                 }
             }
         }

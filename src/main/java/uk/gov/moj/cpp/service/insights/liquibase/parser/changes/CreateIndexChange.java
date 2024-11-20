@@ -35,7 +35,6 @@ public final class CreateIndexChange implements Change {
                     new ArrayList<>()
             );
             tables.put(tableName, table);
-            System.out.println("Warning: Table '" + tableName + "' not found. Created a new entry.");
         }
 
         NodeList columnNodes = element.getElementsByTagNameNS("*", "column");
@@ -48,7 +47,6 @@ public final class CreateIndexChange implements Change {
 
         Index index = new Index(indexName, columns, unique);
         table.indexes().add(index);
-        System.out.println("Added index '" + indexName + "' to table '" + tableName + "'.");
     }
 }
 

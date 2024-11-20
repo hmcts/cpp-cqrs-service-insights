@@ -12,8 +12,8 @@ public class ModelBuilder {
     /**
      * Builds the graph model with nodes and edges based on command handlers, process handlers, and aggregates.
      *
-     * @param commandHandler         Map of command handler keys to their collections.
-     * @param processHandler         Map of process handler keys to their collections.
+     * @param commandHandler            Map of command handler keys to their collections.
+     * @param processHandler            Map of process handler keys to their collections.
      * @param aggregateSimpleClassNames List of aggregate class names.
      * @return The constructed graph model.
      */
@@ -50,9 +50,6 @@ public class ModelBuilder {
             if (model.hasNode(correspondingAggregateId)) {
                 // Create an edge from handler to aggregate
                 model.addEdge(new Edge(handlerId, correspondingAggregateId));
-            } else {
-                // Handle the case where the aggregate node does not exist
-                System.err.println("Aggregate node not found for handler: " + handlerKey);
             }
         }
 
@@ -73,9 +70,6 @@ public class ModelBuilder {
             if (model.hasNode(correspondingAggregateId)) {
                 // Create an edge from processor to aggregate
                 model.addEdge(new Edge(processorId, correspondingAggregateId));
-            } else {
-                // Handle the case where the aggregate node does not exist
-                System.err.println("Aggregate node not found for processor: " + processorKey);
             }
         }
 

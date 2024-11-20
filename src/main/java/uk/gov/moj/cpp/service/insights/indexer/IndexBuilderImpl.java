@@ -1,7 +1,5 @@
 package uk.gov.moj.cpp.service.insights.indexer;
 
-import static java.lang.System.out;
-
 import uk.gov.moj.cpp.service.insights.model.ClassInfo;
 import uk.gov.moj.cpp.service.insights.model.DependencyInfo;
 import uk.gov.moj.cpp.service.insights.model.MethodInfo;
@@ -72,7 +70,6 @@ public class IndexBuilderImpl implements IndexBuilder {
                     try {
                         parseJavaFile(file);
                     } catch (IOException e) {
-                        System.err.println("Error parsing file: " + file);
                         e.printStackTrace();
                     }
                 }
@@ -238,14 +235,9 @@ public class IndexBuilderImpl implements IndexBuilder {
                         String implClass = implClasses.iterator().next();
                         dependency.setType(implClass);
                         dependency.addImplementingClass(implClass);
-                        out.println("Resolved interface dependency: " + depType + " to " + implClass);
                     } else if (implClasses.size() > 1) {
-                        // Handle multiple implementations, possibly by selecting one or marking as ambiguous
-                        System.err.println("Multiple implementations found for interface: " + depType + ". Dependency resolution ambiguous for dependency: " + dependency.getName());
                         dependency.addImplementingClass("AMBIGUOUS");
                     } else {
-                        // No implementations found
-                        System.err.println("No implementations found for interface: " + depType + ". Dependency resolution failed for dependency: " + dependency.getName());
                         dependency.addImplementingClass("UNRESOLVED");
                     }
                 }
@@ -288,7 +280,7 @@ public class IndexBuilderImpl implements IndexBuilder {
 
     @Override
     public String getMethodSignature(String className, String methodName) {
-        return className + "#" + methodName ;
+        return className + "#" + methodName;
     }
 
     // Additional getter for classInfoMap if needed
@@ -348,7 +340,6 @@ public class IndexBuilderImpl implements IndexBuilder {
         Set<String> implementingClasses = interfaceImplMap.getOrDefault(interfaceName, Set.of());
 
         if (implementingClasses.isEmpty()) {
-            System.err.println("No implementations found for interface: " + interfaceName);
             return Optional.empty();
         }
 
@@ -364,14 +355,7 @@ public class IndexBuilderImpl implements IndexBuilder {
                 } else if (implBodyDecl instanceof ConstructorDeclaration implConstructorDecl) {
                     return Optional.of(implConstructorDecl.getBody().toString());
                 }
-            } else {
-                System.err.println("Implementing method not found: " + implMethodSignature);
             }
-        } else {
-            // Handle multiple implementations
-            // This could involve selecting a default implementation, logging a warning, etc.
-            // For now, we'll log a warning and return empty
-            System.err.println("Multiple implementations found for interface: " + interfaceName + ". Cannot determine which implementation to use for method: " + methodPart);
         }
 
         return Optional.empty();

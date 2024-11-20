@@ -12,13 +12,30 @@ import java.util.Set;
 public class CQRSModelMapper {
 
     /**
+     * Extracts the simple class name from the full class name.
+     *
+     * @param fullClassName The fully qualified class name.
+     * @return The simple class name.
+     */
+    public static String getSimpleClassName(String fullClassName) {
+        if (fullClassName == null || fullClassName.isEmpty()) {
+            return "";
+        }
+        int lastDotIndex = fullClassName.lastIndexOf('.');
+        if (lastDotIndex == -1 || lastDotIndex == fullClassName.length() - 1) {
+            return fullClassName;
+        }
+        return fullClassName.substring(lastDotIndex + 1);
+    }
+
+    /**
      * Processes the scan results to aggregate @Handles values by simple class names.
      * Modules with names ending with moduleNameFilter are considered.
      *
      * @param scanResults The map of module names to their scan results.
      * @return A map where each key is a simple class name, and the value is a set of associated handles.
      */
-    public Map<String, Set<String>> aggregateHandlesByClassName(Map<String, ServiceUtil.ModuleScanResult> scanResults,String moduleNameFilter) {
+    public Map<String, Set<String>> aggregateHandlesByClassName(Map<String, ServiceUtil.ModuleScanResult> scanResults, String moduleNameFilter) {
         // Initialize the result map
         Map<String, Set<String>> classToHandlesMap = new HashMap<>();
 
@@ -49,6 +66,7 @@ public class CQRSModelMapper {
 
         return classToHandlesMap;
     }
+
     /**
      * Processes the scan results to get a list of simple class names for classes implementing the Aggregate interface.
      *
@@ -63,33 +81,17 @@ public class CQRSModelMapper {
             ServiceUtil.ModuleScanResult moduleResult = entry.getValue();
 
 
-                // Iterate through each ClassInfo in the module
-                for (ServiceUtil.AggregateInfo aggregateInfo : moduleResult.aggregates()) {
-                    String fullClassName = aggregateInfo.className();
-                    String simpleClassName = getSimpleClassName(fullClassName);
-                    if (!simpleClassName.isEmpty()) {
-                        aggregateClassNames.add(simpleClassName);
-                    }
+            // Iterate through each ClassInfo in the module
+            for (ServiceUtil.AggregateInfo aggregateInfo : moduleResult.aggregates()) {
+                String fullClassName = aggregateInfo.className();
+                String simpleClassName = getSimpleClassName(fullClassName);
+                if (!simpleClassName.isEmpty()) {
+                    aggregateClassNames.add(simpleClassName);
                 }
+            }
 
         }
 
         return aggregateClassNames;
-    }
-    /**
-     * Extracts the simple class name from the full class name.
-     *
-     * @param fullClassName The fully qualified class name.
-     * @return The simple class name.
-     */
-    public static String getSimpleClassName(String fullClassName) {
-        if (fullClassName == null || fullClassName.isEmpty()) {
-            return "";
-        }
-        int lastDotIndex = fullClassName.lastIndexOf('.');
-        if (lastDotIndex == -1 || lastDotIndex == fullClassName.length() - 1) {
-            return fullClassName;
-        }
-        return fullClassName.substring(lastDotIndex + 1);
     }
 }

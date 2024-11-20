@@ -68,7 +68,7 @@ class IndexBuilderImplTest {
                 public class DependencyClass {
                     public void execute() {
                         // Execution logic
-                        System.out.println("Executing dependency.");
+                
                     }
                 }
                 """;
@@ -209,7 +209,7 @@ class IndexBuilderImplTest {
                 public class DependencyClass {
                     public void execute() {
                         // Execution logic
-                        System.out.println("Executing dependency.");
+                
                     }
                 }
                 """;
@@ -288,7 +288,7 @@ class IndexBuilderImplTest {
                 public class DependencyClass {
                     public void execute() {
                         // Execution logic
-                        System.out.println("Executing dependency.");
+                
                     }
                 }
                 """;
@@ -368,7 +368,7 @@ class IndexBuilderImplTest {
                 public class DependencyClass {
                     public void execute() {
                         // Execution logic
-                        System.out.println("Executing dependency.");
+                
                     }
                 }
                 """;

@@ -112,7 +112,6 @@ public final class CreateTableChange implements Change {
      */
     private ForeignKey parseForeignKey(String foreignKeyRef, String columnName) {
         if (foreignKeyRef == null || !foreignKeyRef.contains("(") || !foreignKeyRef.endsWith(")")) {
-            System.out.println("Warning: Invalid or missing foreign key reference format for column '" + columnName + "'. Expected 'table(column)', got: " + foreignKeyRef);
             return null;
         }
 
@@ -121,7 +120,6 @@ public final class CreateTableChange implements Change {
         var referencedColumn = foreignKeyRef.substring(idx + 1, foreignKeyRef.length() - 1).toLowerCase();
 
         if (referencedTable.isEmpty() || referencedColumn.isEmpty()) {
-            System.out.println("Warning: Referenced table or column is empty for foreign key on column '" + columnName + "'.");
             return null;
         }
 
@@ -148,7 +146,6 @@ public final class CreateTableChange implements Change {
         if (!indexName.isEmpty() && !columns.isEmpty()) {
             return new Index(indexName, columns, unique);
         } else {
-            System.out.println("Warning: Invalid index definition in table: " + element.getAttribute("tableName"));
             return null;
         }
     }

@@ -47,7 +47,6 @@ public class JavaClassIndexer {
                     try {
                         parseJavaFile(file);
                     } catch (IOException e) {
-                        System.err.println("Error parsing file: " + file);
                         e.printStackTrace();
                     }
                 }
@@ -61,7 +60,6 @@ public class JavaClassIndexer {
         try {
             cu = StaticJavaParser.parse(file);
         } catch (Exception e) {
-            System.err.println("Error parsing file: " + file);
             e.printStackTrace();
             return;
         }

@@ -91,7 +91,6 @@ public class MethodStackTracerServiceImpl implements MethodStackTracerService {
         Set<String> implementingClasses = indexBuilder.getInterfaceImplMap().getOrDefault(interfaceName, Set.of());
 
         if (implementingClasses.isEmpty()) {
-            System.err.println("No implementations found for interface: " + interfaceName);
             return Optional.empty();
         }
 
@@ -107,14 +106,7 @@ public class MethodStackTracerServiceImpl implements MethodStackTracerService {
                 } else if (implBodyDecl instanceof com.github.javaparser.ast.body.ConstructorDeclaration implConstructorDecl) {
                     return Optional.of(implConstructorDecl.getBody().toString());
                 }
-            } else {
-                System.err.println("Implementing method not found: " + implMethodSignature);
             }
-        } else {
-            // Handle multiple implementations
-            // This could involve selecting a default implementation, logging a warning, etc.
-            // For now, we'll log a warning and return empty
-            System.err.println("Multiple implementations found for interface: " + interfaceName + ". Cannot determine which implementation to use for method: " + methodPart);
         }
 
         return Optional.empty();

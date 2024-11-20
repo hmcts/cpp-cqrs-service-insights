@@ -14,12 +14,12 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ClassInfo {
     private final String className;
     private final String packageName;
-    private String superClassFullName;
     private final Map<String, String> importMap;
     private final Map<String, MethodInfo> methods = new ConcurrentHashMap<>();
     private final Map<String, DependencyInfo> dependencies = new ConcurrentHashMap<>();
     private final Set<String> implementedInterfaces = ConcurrentHashMap.newKeySet();
     private final Set<MethodInfo> inheritedMethods = new HashSet<>();
+    private String superClassFullName;
 
     public ClassInfo(String className, String packageName, Map<String, String> importMap) {
         this.className = className;

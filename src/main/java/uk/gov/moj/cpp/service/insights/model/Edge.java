@@ -9,4 +9,5 @@ package uk.gov.moj.cpp.service.insights.model;
 public record Edge(
         String source,
         String target
-) {}
+) {
+}

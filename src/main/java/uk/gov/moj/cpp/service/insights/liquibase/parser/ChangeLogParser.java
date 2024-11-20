@@ -32,7 +32,6 @@ public class ChangeLogParser implements IChangeLogParser {
 
     @Override
     public void parseChangeLog(File xmlFile, Map<String, Table> tables) throws ChangeLogParsingException {
-        System.out.println("Processing file: " + xmlFile.getName());
 
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -61,8 +60,6 @@ public class ChangeLogParser implements IChangeLogParser {
                             case "dropIndex" -> new DropIndexChange(changeElement);
                             case "dropColumn" -> new DropColumnChange(changeElement);
                             default -> {
-                                // Handle unsupported change types if necessary
-                                System.out.println("Unsupported change type: " + changeType);
                                 yield null;
                             }
                         };

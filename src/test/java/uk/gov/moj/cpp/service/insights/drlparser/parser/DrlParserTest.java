@@ -149,11 +149,7 @@ class DrlParserTest {
         setupDrlFiles();
 
         List<Path> paths = List.of(jimfs.getPath("/dummy-command/dummy-command-api"), jimfs.getPath("/dummy-query/dummy-query-api"));
-        /*List<Path> paths = Arrays.asList(
-                Paths.get("/Users/satishkumar/moj/software/cpp.context.results/results-query/results-query-api"),
-                Paths.get("/Users/satishkumar/moj/software/cpp.context.results/results-command/results-command-api")
-                // Add other source directories as needed
-        );*/
+
         JavaClassIndexer javaClassIndexer = new JavaClassIndexer();
         javaClassIndexer.buildIndex(paths);
 

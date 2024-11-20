@@ -4,9 +4,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class MethodProcessingResult {
-    private Set<String> generatedEvents;
-    private Set<String> usedAggregates;
-    private Set<String> commandCalled;
+    private final Set<String> generatedEvents;
+    private final Set<String> usedAggregates;
+    private final Set<String> commandCalled;
 
     public MethodProcessingResult() {
         this.generatedEvents = new HashSet<>();
@@ -33,6 +33,7 @@ public class MethodProcessingResult {
     public Set<String> getCommandCalled() {
         return commandCalled;
     }
+
     public void addCommandCalled(String commandCalled) {
         this.commandCalled.add(commandCalled);
     }
