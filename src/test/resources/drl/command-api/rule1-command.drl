@@ -1,0 +1,90 @@
+package uk.gov.moj.cpp.accesscontrol;
+
+import uk.gov.moj.cpp.accesscontrol.drools.Outcome;
+import uk.gov.moj.cpp.accesscontrol.drools.Action;
+import uk.gov.moj.cpp.dummy.command.api.accesscontrol.DummyRuleConstants;
+import uk.gov.moj.cpp.dummy.command.api.accesscontrol.DummyPermissionConstants;
+global uk.gov.moj.cpp.accesscontrol.common.providers.DummyUserAndGroupProvider userAndGroupProvider;
+
+rule "Command - Rule for add hearing result"
+  when
+    $outcome: Outcome();
+    $action: Action(name == "results.add-hearing-result");
+    eval(userAndGroupProvider.isMemberOfAnyOfTheSuppliedGroups($action, DummyRuleConstants.dummyGetUpdateNowsStatusActionGroups()));
+  then
+    $outcome.setSuccess(true);
+end
+
+rule "Command - Rule for generate police results for a defendant"
+  when
+    $outcome: Outcome();
+    $action: Action(name == "results.command.generate-police-results-for-a-defendant");
+    eval(true);
+  then
+    $outcome.setSuccess(true);
+end
+
+rule "Command - Rule for creating hearing results"
+  when
+    $outcome: Outcome();
+    $action: Action(name == "results.api.create-results");
+    eval(userAndGroupProvider.isMemberOfAnyOfTheSuppliedGroups($action, DummyRuleConstants.dummyGetCreateResultsActionGroups()));
+  then
+    $outcome.setSuccess(true);
+end
+
+
+rule "Command - API - Action - listing.delete-next-hearings"
+  when
+    $outcome: Outcome();
+    $action: Action(name == "listing.delete-next-hearings");
+    eval(userAndGroupProvider.isMemberOfAnyOfTheSuppliedGroups($action, DummyRuleConstants.DUMMY_GROUP_LISTING_OFFICERS, DummyRuleConstants.DUMMY_CROWN_COURT_ADMIN, DummyRuleConstants.DUMMY_COURT_ADMINISTRATORS, DummyRuleConstants.DUMMY_GROUP_LEGAL_ADVISERS,
+    DummyRuleConstants.DUMMY_GROUP_COURT_CLERKS, DummyRuleConstants.DUMMY_GROUP_SYSTEM_USERS, DummyRuleConstants.DUMMY_GROUP_COURT_ASSOCIATE));
+  then
+    $outcome.setSuccess(true);
+end
+
+rule "Command - API - Action - listing.command.publish-court-lists-for-crown-courts"
+  when
+    $outcome: Outcome();
+    $action: Action(name == "listing.command.publish-court-lists-for-crown-courts");
+    eval(userAndGroupProvider.isSystemUser($action))
+  then
+    $outcome.setSuccess(true);
+end
+
+rule "Command - add material reference"
+  when
+    $outcome: Outcome();
+    $action: Action(name == "material.add-material");
+     eval(userAndGroupProvider.isMemberOfAnyOfTheSuppliedGroups(
+        $action, "Dummy System Users", "Dummy CMS""));
+  then
+    $outcome.setSuccess(true);
+end
+rule "Command - associate defence organisation"
+  when
+    $outcome: Outcome();
+    $action: Action(name == "defence.associate-defence-organisation");
+    eval(userAndGroupProvider.isMemberOfAnyOfTheSuppliedGroups($action,  "Dummy Advocates","Dummy Chambers Admin"));
+  then
+    $outcome.setSuccess(true);
+end
+rule "Command - Archive COTR"
+  when
+    $outcome: Outcome();
+    $action: Action(name == "progression.archive-cotr");
+    eval(userAndGroupProvider.hasPermission($action, DummyPermissionConstants.dummyPermissions())) or
+    eval(userAndGroupProvider.isMemberOfAnyOfTheSuppliedGroups($action, "Advocates"));
+  then
+    $outcome.setSuccess(true);
+end
+
+rule "Command - Rule for tracking hearing results"
+  when
+    $outcome: Outcome();
+    $action: Action(name == "results.api.track-results");
+    eval(userAndGroupProvider.isMemberOfAnyOfTheSuppliedGroups($action, DummyRuleConstants.dummyGetUpdateNowsStatusActionGroups()));
+  then
+    $outcome.setSuccess(true);
+end

@@ -1,0 +1,121 @@
+package uk.gov.moj.cpp.accesscontrol;
+
+import static uk.gov.moj.cpp.dummy.query.api.accesscontrol.DummyGroupType.*;
+
+import uk.gov.moj.cpp.accesscontrol.drools.Outcome;
+import uk.gov.moj.cpp.accesscontrol.drools.Action;
+import java.util.Arrays;
+
+global uk.gov.moj.cpp.accesscontrol.common.providers.DummyUserAndGroupProvider userAndGroupProvider;
+
+rule "Query - API - results.get-person-details"
+  when
+    $outcome: Outcome();
+    $action: Action(name == "results.get-person-details");
+    eval(userAndGroupProvider.isMemberOfAnyOfTheSuppliedGroups($action, personDetailsGroups()));
+
+  then
+    $outcome.setSuccess(true);
+end
+
+rule "Query - API - results.get-hearing-details"
+  when
+    $outcome: Outcome();
+    $action: Action(name == "results.get-hearing-details");
+    eval(userAndGroupProvider.isMemberOfAnyOfTheSuppliedGroups($action, hearingDetailsGroups()));
+  then
+    $outcome.setSuccess(true);
+end
+
+rule "Query - API - results.get-results-details"
+  when
+    $outcome: Outcome();
+    $action: Action(name == "results.get-results-details");
+    eval(userAndGroupProvider.isMemberOfAnyOfTheSuppliedGroups($action, resultsDetailsGroups()));
+  then
+    $outcome.setSuccess(true);
+end
+
+rule "Query - API - results.get-results-summary"
+  when
+    $outcome: Outcome();
+    $action: Action(name == "results.get-results-summary");
+    eval(userAndGroupProvider.isMemberOfAnyOfTheSuppliedGroups($action, resultsSummaryGroups()));
+  then
+    $outcome.setSuccess(true);
+end
+
+rule "Query - API - results.get-hearing-information-details-for-hearing"
+  when
+    $outcome: Outcome();
+    $action: Action(name == "results.get-hearing-information-details-for-hearing");
+    eval(userAndGroupProvider.isMemberOfAnyOfTheSuppliedGroups($action, resultsDetailsGroups()));
+  then
+    $outcome.setSuccess(true);
+end
+
+rule "Query - API - results.get-hearing-details-internal"
+  when
+    $outcome: Outcome();
+    $action: Action(name == "results.get-hearing-details-internal");
+    eval(userAndGroupProvider.isMemberOfAnyOfTheSuppliedGroups($action, resultsDetailsGroups()));
+  then
+    $outcome.setSuccess(true);
+end
+
+rule "results - Query - API - results.query.informant-register-document-request"
+  when
+    $outcome: Outcome();
+    $action: Action(name == "results.query.informant-register-document-request");
+    eval(userAndGroupProvider.isMemberOfAnyOfTheSuppliedGroups($action, "Dummy System Users", "Dummy Listing Officers"))
+  then
+    $outcome.setSuccess(true);
+end
+
+rule "results - Query - API - results.query.informant-register-document-by-material"
+  when
+    $outcome: Outcome();
+    $action: Action(name == "results.query.informant-register-document-by-material");
+    eval(userAndGroupProvider.isMemberOfAnyOfTheSuppliedGroups($action, "System Users", "Listing Officers", "Court Clerks", "Legal Advisers", "Prison Admin", "Probation Admin", "Police Admin", "Victims & Witness Care Admin",
+    "Youth Offending Service Admin", "Legal Aid Agency Admin", "Probation Admin", "Court Associate"))
+  then
+    $outcome.setSuccess(true);
+end
+
+rule "results - Query - API - results.query.informant-register-document-by-request-date"
+  when
+    $outcome: Outcome();
+    $action: Action(name == "results.query.informant-register-document-by-request-date");
+    eval(userAndGroupProvider.isMemberOfAnyOfTheSuppliedGroups($action, "System Users", "Listing Officers", "Court Clerks", "Legal Advisers", "Prison Admin", "Probation Admin", "Police Admin", "Victims & Witness Care Admin",
+    "Youth Offending Service Admin", "Legal Aid Agency Admin", "Probation Admin", "Court Associate"))
+  then
+    $outcome.setSuccess(true);
+end
+
+rule "results - Query - API - results.prosecutor-results"
+  when
+    $outcome: Outcome();
+    $action: Action(name == "results.prosecutor-results");
+    eval(userAndGroupProvider.isMemberOfAnyOfTheSuppliedGroups($action, "CPPI Consumers"))
+  then
+    $outcome.setSuccess(true);
+end
+
+rule "results - Query - API - results.get-defendants-tracking-status"
+  when
+    $outcome: Outcome();
+    $action: Action(name == "results.get-defendants-tracking-status");
+    eval(userAndGroupProvider.isMemberOfAnyOfTheSuppliedGroups($action, defendantsTrackingStatusGroups()));
+
+  then
+    $outcome.setSuccess(true);
+end
+
+rule "Query - API - results.query.nces-email-notification-details"
+  when
+    $outcome: Outcome();
+    $action: Action(name == "results.query.nces-email-notification-details");
+    eval(userAndGroupProvider.isMemberOfAnyOfTheSuppliedGroups($action, "System Users"));
+  then
+    $outcome.setSuccess(true);
+end
